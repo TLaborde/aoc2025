@@ -13,14 +13,11 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-    start= 50
+    start = 50
     count = 0
     for line in data:
-        if line.startswith("R"):
-            start += int(line[1:])
-        elif line.startswith("L"):
-            start -= int(line[1:])
-        start = (start + 100) % 100
+        direction = 1 if line.startswith("R") else -1
+        start = (start + direction * int(line[1:])) % 100
         if start == 0:
             count += 1
     return count
@@ -28,23 +25,29 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
-    start= 50
+    position = 50
     count = 0
+    
     for line in data:
-        c = int(line[1:])
-        count += c // 100
-        c = c % 100
-        if line.startswith("R"):
-            if start + c > 100:
-                count += 1
-            start += c
-        elif line.startswith("L"):
-            if start > 0 and start - c < 0:
-                count += 1
-            start -= c
-        start = (start + 100) % 100
-        if start == 0:
+        distance = int(line[1:])
+        direction = 1 if line.startswith("R") else -1
+        
+        # Count full laps
+        count += distance // 100
+        remaining = distance % 100
+        
+        # Check if we cross position 0
+        new_position = position + (direction * remaining)
+        if direction > 0 and new_position >= 100:
             count += 1
+        elif direction < 0 and new_position < 0:
+            count += 1
+        
+        # Update position
+        position = new_position % 100
+        if position == 0:
+            count += 1
+    
     return count
 
 def solve(puzzle_input):

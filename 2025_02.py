@@ -14,44 +14,36 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     ranges = "".join(data).split(",")
-    sum = 0
+    s = 0
     for r in ranges:
         start, end = map(int, r.split("-"))
-        for i in range(start, end + 1):
-            #get number of digits in i
-            digits = len(str(i))
-            if digits % 2 == 0:
-                mid = digits // 2
-                left = str(i)[:mid]
-                right = str(i)[mid:]
-                if left == right:
-                    #print(f"adding {i}")
-                    sum += i
-    return sum
+        s += sum(
+            i for i in range(start, end + 1)
+            if (digits := len(s := str(i))) % 2 == 0
+            and s[:digits // 2] == s[digits // 2:]
+        )
+    return s
 
 
 def part2(data):
     """Solve part 2."""
     ranges = "".join(data).split(",")
-    sum = 0
-    for r in ranges:
-        start, end = map(int, r.split("-"))
-        for i in range(start, end + 1):
-            #get number of digits in i
-            digits = len(str(i))
-            # get all the divisors of digits
-            divisors = []
-            for d in range(1, digits //2 + 1):
-                if digits % d == 0:
-                    divisors.append(d)
-            for div in divisors:
-                # if each segment of length div is the same
-                segments = [str(i)[j:j+div] for j in range(0, digits, div)]
-                if all(s == segments[0] for s in segments):
-                    print(f"adding {i}")
-                    sum += i
-                    break
-    return sum
+    
+    def has_repeating_pattern(num_str):
+        """Check if number has a repeating pattern."""
+        digits = len(num_str)
+        return any(
+            digits % div == 0 and num_str == num_str[:div] * (digits // div)
+            for div in range(1, digits // 2 + 1)
+        )
+    
+    return sum(
+        i
+        for r in ranges
+        for start, end in [map(int, r.split("-"))]
+        for i in range(start, end + 1)
+        if has_repeating_pattern(str(i))
+    )
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
