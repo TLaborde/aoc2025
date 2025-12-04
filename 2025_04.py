@@ -15,51 +15,44 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     # for each row, col in data, do something
-    free = 0
-    for (i, row) in enumerate(data):
-        for j in range(len(row)):
-            # check all neighbors
-            neighbors = 0
-            if data[i][j] != "@":
-                continue
-            for di in [-1, 0, 1]:
-                for dj in [-1, 0, 1]:
-                    if di == 0 and dj == 0:
-                        continue
-                    ni, nj = i + di, j + dj
-                    if 0 <= ni < len(data) and 0 <= nj < len(data[0]):
-                        if data[ni][nj] == "@":
-                            neighbors += 1
-            if neighbors < 4:
-                free += 1
+    directions = [(di, dj) for di in [-1, 0, 1] for dj in [-1, 0, 1] if (di, dj) != (0, 0)]
+    
+    free = sum(
+        1 for i, row in enumerate(data)
+        for j, cell in enumerate(row)
+        if cell == "@" and sum(
+            1 for di, dj in directions
+            if 0 <= i + di < len(data) and 0 <= j + dj < len(row)
+            and data[i + di][j + dj] == "@"
+        ) < 4
+    )
     return free
 
 
 def part2(data):
-    change = True
+    """Solve part 2."""
+    directions = [(di, dj) for di in [-1, 0, 1] for dj in [-1, 0, 1] if (di, dj) != (0, 0)]
+    data = [row.copy() for row in data]
     free = 0
-    while change:
-        change = False
-        new_data = [row.copy() for row in data]
-        for (i, row) in enumerate(data):
-            for j in range(len(row)):
-                # check all neighbors
-                neighbors = 0
-                if data[i][j] != "@":
-                    continue
-                for di in [-1, 0, 1]:
-                    for dj in [-1, 0, 1]:
-                        if di == 0 and dj == 0:
-                            continue
-                        ni, nj = i + di, j + dj
-                        if 0 <= ni < len(data) and 0 <= nj < len(data[0]):
-                            if data[ni][nj] == "@":
-                                neighbors += 1
-                if neighbors < 4:
-                    free += 1
-                    change = True
-                    new_data[i][j] = "."
-        data = new_data
+    
+    while True:
+        to_remove = [
+            (i, j) 
+            for i, row in enumerate(data)
+            for j, cell in enumerate(row)
+            if cell == "@" and sum(
+                1 for di, dj in directions
+                if 0 <= i + di < len(data) and 0 <= j + dj < len(row)
+                and data[i + di][j + dj] == "@"
+            ) < 4
+        ]
+        
+        if not to_remove:
+            break
+            
+        free += len(to_remove)
+        for i, j in to_remove:
+            data[i][j] = "."
     
     return free
 
