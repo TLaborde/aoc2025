@@ -32,7 +32,6 @@ def part1(data):
 def part2(data):
     """Solve part 2."""
     directions = [(di, dj) for di in [-1, 0, 1] for dj in [-1, 0, 1] if (di, dj) != (0, 0)]
-    data = [row.copy() for row in data]
     free = 0
     
     while True:
