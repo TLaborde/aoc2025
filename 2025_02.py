@@ -32,6 +32,8 @@ def part2(data):
     def has_repeating_pattern(num_str):
         """Check if number has a repeating pattern."""
         digits = len(num_str)
+        if digits % 2 != 0:
+            return False
         return any(
             digits % div == 0 and num_str == num_str[:div] * (digits // div)
             for div in range(1, digits // 2 + 1)
