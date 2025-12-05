@@ -13,12 +13,42 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-    return 0
+    # find index in data with empty value
+    ranges = []
+    to_check = []
+    for element in data:
+        if '-' in element:
+            ranges.append(element.split('-'))
+        elif element:  # Skip empty strings
+            to_check.append(element)
+    total = 0
+    for number in to_check:
+        for r in ranges:
+            if int(r[0]) <= int(number) <= int(r[1]):
+                total += 1
+                break
+    return total
 
 
 def part2(data):
     """Solve part 2."""
-    return 0
+    ranges = []
+    for element in data:
+        if '-' in element:
+            ranges.append(element.split('-'))
+    merged_ranges = []
+    # Merge overlapping ranges
+    for r in sorted(ranges, key=lambda x: int(x[0])):
+        if not merged_ranges or int(merged_ranges[-1][1]) < int(r[0]) - 1:
+            merged_ranges.append(r)
+        else:
+            merged_ranges[-1][1] = str(max(int(merged_ranges[-1][1]), int(r[1])))
+    
+    # Count numbers in all merged ranges
+    total = 0
+    for r in merged_ranges:
+        total += int(r[1]) - int(r[0]) + 1
+    return total
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
