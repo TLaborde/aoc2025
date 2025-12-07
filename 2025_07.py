@@ -14,32 +14,35 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     # reutnr coord x,y if value is S
-    beams = set()
-    for x, line in enumerate(data):
-        for y, value in enumerate(line):
-            if value == 'S':
-                beams.add((x, y))
+    beams = {(x, y) for x, line in enumerate(data) for y, value in enumerate(line) if value == 'S'}
     split = 0
-    move = True
-    while move:
-        move = False
+    
+    while beams:
         new_beams = set()
         for x, y in beams:
-            if x + 1 == len(data):
+            if x + 1 >= len(data):
                 continue
-            if (x + 1, y) not in beams and data[x+1][y] == '.':
-                new_beams.add((x + 1, y))
-                move = True
-            if (x + 1, y) not in beams and data[x+1][y] == '^':
+            
+            next_cell = data[x + 1][y]
+            next_pos = (x + 1, y)
+            
+            if next_pos in beams:
+                continue
+            
+            if next_cell == '.':
+                new_beams.add(next_pos)
+            elif next_cell == '^':
                 split += 1
-                if y > 0:
-                    new_beams.add((x + 1, y - 1))
-                    move = True
-                if y + 1 < len(data[0]):
-                    new_beams.add((x + 1, y + 1))
-                    move = True
-        if move:
-            beams = new_beams
+                new_beams.update({
+                    (x + 1, y + dy) 
+                    for dy in [-1, 1] 
+                    if 0 <= y + dy < len(data[0])
+                })
+        
+        if not new_beams:
+            break
+        beams = new_beams
+    
     return split
 
 def solve_rec(x, y, data, memo=None):
