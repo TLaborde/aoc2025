@@ -8,18 +8,96 @@ puzzle = Puzzle(year=int(year), day=int(day))
 
 def parse(puzzle_input):
     """Parse input."""
-    return [line for line in puzzle_input.split()]
+    return [line.split(",") for line in puzzle_input.split()]
 
 
 def part1(data):
     """Solve part 1."""
-    return 0
+    # calcuclate distance between each 2 points, then sort by min distance
+    distances = []
+    connected = []
+    for i in range(len(data)):
+        x1, y1, z1 = map(int, data[i])
+        connected.append([i])
+        for j in range(i + 1, len(data)):
+            x2, y2, z2 = map(int, data[j])
+            dist = (x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2
+            distances.append((dist, i, j))
+    distances.sort()
+    if len(data) == 20:
+        max_wires = 10
+    else:
+        max_wires = 1000
+    
+    wires = 0
+    # connected is a set of set of connected points
+    #connected = []
+    for dist, i, j in distances:
+        if wires >= max_wires:
+            break
+        
+        found_i = None
+        found_j = None
+        for group in connected:
+            if i in group:
+                found_i = group
+            if j in group:
+                found_j = group
+        #if found_i and found_j and found_i is not found_j:
+        if not found_i:
+            print("cannogt find i", i   )
+        if not found_j:
+            print("cannot find j", j)
+        if found_i is not found_j:
+            found_i.extend(found_j)
+            connected.remove(found_j)
+        wires += 1
+
+
+    # multiple the length of the 3 largest groups
+    connected.sort(key=len, reverse=True)
+    return len(connected[0]) * len(connected[1]) * len(connected[2])
+
 
 
 def part2(data):
-    """Solve part 2."""
-    return 0
+    distances = []
+    connected = []
+    for i in range(len(data)):
+        x1, y1, z1 = map(int, data[i])
+        connected.append([i])
+        for j in range(i + 1, len(data)):
+            x2, y2, z2 = map(int, data[j])
+            dist = (x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2
+            distances.append((dist, i, j))
+    distances.sort()
 
+    wires = 0
+    # connected is a set of set of connected points
+    #connected = []
+    while len(connected) > 1:
+        for dist, i, j in distances:
+
+            
+            found_i = None
+            found_j = None
+            for group in connected:
+                if i in group:
+                    found_i = group
+                if j in group:
+                    found_j = group
+            #if found_i and found_j and found_i is not found_j:
+            if not found_i:
+                print("cannogt find i", i   )
+            if not found_j:
+                print("cannot find j", j)
+            if found_i is not found_j:
+                found_i.extend(found_j)
+                connected.remove(found_j)
+            if len(connected) == 1:
+                break
+
+    return int(data[i][0]) * int(data[j][0])
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
     data = parse(puzzle_input)
@@ -35,12 +113,14 @@ if __name__ == "__main__":
         if answer_a != example.answer_a:
             print(f"expected {example.answer_a}, got {answer_a}")
             raise
-        # if (example.answer_b):
-        #    if answer_b != example.answer_b:
-        #        print(f"expected {example.answer_b}, got {answer_b}")
-        #        raise
+        if (example.answer_b):
+            if answer_b != example.answer_b:
+                print(f"expected {example.answer_b}, got {answer_b}")
+                raise
 
     answer_a, answer_b = solve(puzzle.input_data)
-    puzzle.answer_a = answer_a
-    if answer_b != "None":
-        puzzle.answer_b = answer_b
+    print("A:", answer_a)
+    print("B:", answer_b)
+    #puzzle.answer_a = answer_a
+    #if answer_b != "None":
+    #    puzzle.answer_b = answer_b
