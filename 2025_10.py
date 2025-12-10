@@ -1,4 +1,3 @@
-from aocd import data
 from aocd.models import Puzzle
 import os
 from itertools import combinations
@@ -59,7 +58,6 @@ def part2(data):
         for b in line[1:-1]:
             button = set(int(x) for x in b[1:-1].split(","))
             buttons.append(button)
-        print(joltages, buttons)
         presses = [
             z3.Int(f"press{i}") for i in range(len(buttons))
         ]
